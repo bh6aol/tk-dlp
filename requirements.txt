@@ -1,0 +1,7 @@
+customtkinter==5.2.2
+darkdetect==0.8.0
+packaging==25.0
+pillow==11.3.0
+setuptools==78.1.1
+wheel==0.45.1
+yt-dlp==2025.7.21
