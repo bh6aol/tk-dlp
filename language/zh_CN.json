@@ -1,5 +1,10 @@
 {
     "ok":"好",
     "about":"关于",
-    "version":"版本"
+    "version":"版本",
+    "update":"更新",
+    "loading":"加载中",
+    "is_up_to_date":"tk-dlp 已是最新",
+    "find_new_version":"发现新版本",
+    "yn_go_to_download":"是否去下载？"
 }

@@ -27,13 +27,13 @@ class App(ctk.CTk):
                 default_locale = locale.getdefaultlocale()
                 language = default_locale[0]
         except Exception as e:
-            logging.error(e)
+            logging.exception(e)
             language = "en_US"
         try:
             with open(os.path.join("language", f"{language}.json"), "r", encoding="utf-8") as f:
                 return LanguageDict(json.loads(f.read()))
         except Exception as e:
-            logging.error(e)
+            logging.exception(e)
             sys.exit(-1)
 
 
@@ -50,8 +50,8 @@ def main():
     config = configparser.ConfigParser()
     config.read('config.ini')
 
-    log_level = config.getint("log", "log_level")
-    log_file = config.get("log", "log_file")
+    log_level = config.getint("log", "level")
+    log_file = config.get("log", "file")
 
     # init log
     logging.basicConfig(
