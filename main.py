@@ -3,6 +3,7 @@ import configparser
 import logging
 import json
 import os
+import sys
 from window import *
 from util import *
 
@@ -33,7 +34,7 @@ class App(ctk.CTk):
                 return LanguageDict(json.loads(f.read()))
         except Exception as e:
             logging.error(e)
-            exit(-1)
+            sys.exit(-1)
 
 
     def show_about(self):
