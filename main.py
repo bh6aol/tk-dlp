@@ -38,7 +38,7 @@ class App(ctk.CTk):
 
 
     def show_about(self):
-        about_win = AboutWindow(self, language=self.language)
+        about_win = AboutWindow(self, language=self.language, config=self.config)
         about_win.transient(self)
         about_win.grab_set()
         self.wait_window(about_win)
@@ -46,18 +46,22 @@ class App(ctk.CTk):
 
 
 def main():
-    # init log
-    logging.basicConfig(
-        filename='tk-dlp.log',
-        filemode='w',
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-        datefmt='%Y-%m-%d %H:%M:%S',
-        level=logging.DEBUG
-    )
-
     # load cfg
     config = configparser.ConfigParser()
     config.read('config.ini')
+
+    log_level = config.getint("log", "log_level")
+    log_file = config.get("log", "log_file")
+
+    # init log
+    logging.basicConfig(
+        filename=log_file,
+        filemode='w',
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S',
+        level=log_level
+    )
+
 
     app = App(config)
     app.mainloop()

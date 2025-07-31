@@ -1,12 +1,14 @@
+from configparser import ConfigParser
 import customtkinter as ctk
 import webbrowser
 from util import *
 from PIL import Image
 
 class AboutWindow(ctk.CTkToplevel):
-    def __init__(self, *args, fg_color = None, language: LanguageDict, **kwargs):
+    def __init__(self, *args, fg_color = None, language: LanguageDict, config: ConfigParser, **kwargs):
         super().__init__(*args, fg_color=fg_color, **kwargs)
         self.language = language
+        self.config = config
         self.title(language["about"])
         self.resizable(False, False)
         win_width, win_height = 350, 180
@@ -15,7 +17,8 @@ class AboutWindow(ctk.CTkToplevel):
         frame = ctk.CTkFrame(self, corner_radius=10)
         frame.pack(expand=True, fill="both", padx=10, pady=10)
 
-        label = ctk.CTkLabel(frame, text=f"📦 tk-dlp App\n{self.language["version"]} 2025.07.29\n© 2025 BH6AOL")
+        label = ctk.CTkLabel(frame, 
+            text=f"📦 tk-dlp App\n{self.language["version"]} {config.get("common", "version",fallback="N/A")}\n© 2025 BH6AOL")
         label.pack(pady=(10, 5))
 
         github_icon = ctk.CTkImage(
