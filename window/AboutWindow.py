@@ -79,7 +79,7 @@ class AboutWindow(ctk.CTkToplevel):
             cursor="hand2"
         )
         link_bilibili.pack(side="left", padx=5)
-        link_bilibili.bind("<Button-1>", lambda e: webbrowser.open("https://space.bilibili.com/10883577/bh6aol"))
+        link_bilibili.bind("<Button-1>", lambda e: webbrowser.open("https://space.bilibili.com/10883577"))
 
         button_frame = ctk.CTkFrame(frame, fg_color="transparent")  
         button_frame.pack(pady=10)
@@ -110,6 +110,7 @@ class AboutWindow(ctk.CTkToplevel):
             current_version = version.parse(self.config.get("common", "version"))
             if current_version < latest_version:
                 answer = messagebox.askyesno(
+                    title=self.config.get("common", "app_name"),
                     message=f"{self.language['find_new_version']}: {latest_version}\n{self.language['yn_go_to_download']}",
                     icon="info"
                 )
@@ -117,11 +118,14 @@ class AboutWindow(ctk.CTkToplevel):
                     url = f"{self.config.get('update', 'download_url')}/{latest_version_text}"
                     webbrowser.open(url)
             else:
-                messagebox.showinfo(message=self.language["is_up_to_date"], icon="info")
+                messagebox.showinfo(
+                    title=self.config.get("common", "app_name"),
+                    message=f"{self.config.get('common','app_name')} {self.language['is_up_to_date']}",
+                    icon="info")
         except Exception as e:
             logging.exception(e)
         finally:
             self.update_button.after(
-                500, 
+                300, 
                 lambda: self.update_button.configure(text=self.language["update"], state="normal")
             )

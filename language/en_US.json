@@ -4,7 +4,7 @@
     "version":"Version",
     "update":"Update",
     "loading":"Loading",
-    "is_up_to_date":"tk-dlp is up to date",
+    "is_up_to_date":"is up to date",
     "find_new_version":"Find new version",
     "yn_go_to_download":"Go to download?"
 }

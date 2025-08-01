@@ -13,7 +13,7 @@ class App(ctk.CTk):
         self.config = config
         self.language = self.load_language()
         self.geometry("400x150")
-        self.title("tk-dlp")
+        self.title(self.config.get('common', 'app_name'))
 
         self.button = ctk.CTkButton(self, text=self.language["about"], command=self.show_about)
         self.button.pack(padx=20, pady=20)
