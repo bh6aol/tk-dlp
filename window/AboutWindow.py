@@ -25,20 +25,20 @@ class AboutWindow(ctk.CTkToplevel):
         label.pack(pady=(10, 5))
 
         github_icon = ctk.CTkImage(
-            light_image=Image.open("image/github-logo.png"),  
-            dark_image=Image.open("image/github-logo.png"),
+            light_image=Image.open(R.path("image/github-logo.png")),  
+            dark_image=Image.open(R.path("image/github-logo.png")),
             size=(18, 18)
         )
 
         x_icon = ctk.CTkImage(
-            light_image=Image.open("image/x-logo.png"),  
-            dark_image=Image.open("image/x-logo.png"),
+            light_image=Image.open(R.path("image/x-logo.png")),  
+            dark_image=Image.open(R.path("image/x-logo.png")),
             size=(18, 18)
         )
 
         bilibili_icon = ctk.CTkImage(
-            light_image=Image.open("image/bilibili-logo.ico"),  
-            dark_image=Image.open("image/bilibili-logo.ico"),
+            light_image=Image.open(R.path("image/bilibili-logo.ico")),  
+            dark_image=Image.open(R.path("image/bilibili-logo.ico")),
             size=(18, 18)
         )
         # 水平布局容器
