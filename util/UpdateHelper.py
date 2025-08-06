@@ -9,10 +9,18 @@ class UpdateHelper:
 
     def get_latest_version(self) -> str | None:
         latest_version = None
+        http_proxy = self.config.get("proxy", "http_proxy", fallback="")
+        https_proxy = self.config.get("proxy", "https_proxy", fallback="")
+
+        proxies = {
+            "http": http_proxy,
+            "https": https_proxy,
+        }
+
         try:
             url = self.config.get("update", "check_url")
             headers = {"Accept": "application/vnd.github.v3+json"}
-            response = requests.get(url, headers=headers)
+            response = requests.get(url, headers=headers,proxies=proxies)
             if response.status_code == 200:
                 tags = response.json()
                 if tags:

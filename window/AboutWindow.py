@@ -103,29 +103,41 @@ class AboutWindow(ctk.CTkToplevel):
         threading.Thread(target=self.get_latest_version).start()
 
     def get_latest_version(self):
+        uh = UpdateHelper(self.config)
+        latest_version_text = uh.get_latest_version()
+
+        self.update_button.after(
+            300, 
+            lambda: self.update_button.configure(text=self.language["update"], state="normal")
+        )
+
+        if latest_version_text == None:
+            messagebox.showerror(
+                title=self.config.get("common", "app_name"),
+                message=f"{self.language['request_latest_version_failed']}",
+                icon="error")
+            return
         try:
-            uh = UpdateHelper(self.config)
-            latest_version_text = uh.get_latest_version()
             latest_version = version.parse(latest_version_text)
             current_version = version.parse(self.config.get("common", "version"))
-            if current_version < latest_version:
-                answer = messagebox.askyesno(
-                    title=self.config.get("common", "app_name"),
-                    message=f"{self.language['find_new_version']}: {latest_version}\n{self.language['yn_go_to_download']}",
-                    icon="info"
-                )
-                if answer:
-                    url = f"{self.config.get('update', 'download_url')}/{latest_version_text}"
-                    webbrowser.open(url)
-            else:
-                messagebox.showinfo(
-                    title=self.config.get("common", "app_name"),
-                    message=f"{self.config.get('common','app_name')} {self.language['is_up_to_date']}",
-                    icon="info")
         except Exception as e:
-            logging.exception(e)
-        finally:
-            self.update_button.after(
-                300, 
-                lambda: self.update_button.configure(text=self.language["update"], state="normal")
+            messagebox.showerror(
+                title=self.config.get("common", "app_name"),
+                message=e,
+                icon="error")
+            return
+
+        if current_version < latest_version:
+            answer = messagebox.askyesno(
+                title=self.config.get("common", "app_name"),
+                message=f"{self.language['find_new_version']}: {latest_version}\n{self.language['yn_go_to_download']}",
+                icon="info"
             )
+            if answer:
+                url = f"{self.config.get('update', 'download_url')}/{latest_version_text}"
+                webbrowser.open(url)
+        else:
+            messagebox.showinfo(
+                title=self.config.get("common", "app_name"),
+                message=f"{self.config.get('common','app_name')} {self.language['is_up_to_date']}",
+                icon="info")
