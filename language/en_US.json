@@ -1,11 +1,14 @@
 {
     "ok":"OK",
     "about":"About",
+    "help":"Help",
     "version":"Version",
     "update":"Update",
     "loading":"Loading",
     "is_up_to_date":"is up to date",
     "find_new_version":"Find new version",
     "request_latest_version_failed":"Request latest version failed",
-    "yn_go_to_download":"Go to download?"
+    "yn_go_to_download":"Go to download?",
+    "download":"Download",
+    "url_placeholder":"Please enter the video address"
 }

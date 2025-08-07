@@ -1,3 +1,4 @@
+import tkinter as tk
 import customtkinter as ctk
 import configparser
 import logging
@@ -8,9 +9,9 @@ from window import *
 from util import *
 
 class App(ctk.CTk):
-    def __init__(self, config):
+    def __init__(self, cfg):
         super().__init__()
-        self.config = config
+        self.cfg = cfg
         self.language = self.load_language()
 
         width = 400
@@ -18,11 +19,43 @@ class App(ctk.CTk):
         self.geometry(f"{width}x{height}")
         self.center_window(width, height)
         
-        self.title(self.config.get('common', 'app_name'))
+        self.title(self.cfg.get('common', 'app_name'))
 
-        self.button = ctk.CTkButton(self, text=self.language["about"], command=self.show_about)
-        self.button.pack(padx=20, pady=20)
+        menu_bar = tk.Menu(self)
 
+        # help
+        help_menu = tk.Menu(menu_bar, tearoff=0)
+        help_menu.add_command(label=self.language['about'], accelerator="Ctrl+H", command=self.show_about)
+        menu_bar.add_cascade(label=self.language['help'], menu=help_menu)
+
+        # add menu_bar
+        self.config(menu=menu_bar)
+
+        search_frame = ctk.CTkFrame(self, fg_color="transparent")
+        search_frame.pack(pady=(30, 20), padx=20, fill="x")
+
+        self.url_entry = ctk.CTkEntry(search_frame, placeholder_text=self.language['url_placeholder'])
+        self.url_entry.pack(side="left", fill="x", expand=True)
+
+        ctk.CTkLabel(search_frame, width=1, text=" ").pack(side="left")
+
+        self.search_button = ctk.CTkButton(search_frame, text=self.language['download'], 
+                                           command=self.download, width=80)
+        self.search_button.pack(side="left")
+
+        video_info_frame = ctk.CTkFrame(self, fg_color="transparent")
+        video_info_frame.pack(pady=(0, 0), padx=20, fill="x")
+        ctk.CTkLabel(video_info_frame, width=1, text="Video name: ").pack(side="left")
+
+        progress_frame = ctk.CTkFrame(self, fg_color="transparent")
+        progress_frame.pack(pady=(0, 0), padx=20, fill="x")
+        progressbar = ctk.CTkProgressBar(progress_frame, width=300)
+        progressbar.pack(fill="x")
+        progressbar.set(0.5)  # set as 50%
+        progressbar.start()   # unkown progress disp
+
+
+    
     def center_window(self, width, height):
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
@@ -52,21 +85,22 @@ class App(ctk.CTk):
 
 
     def show_about(self):
-        about_win = AboutWindow(self, language=self.language, config=self.config)
+        about_win = AboutWindow(self, language=self.language, config=self.cfg)
         about_win.transient(self)
         about_win.grab_set()
         self.wait_window(about_win)
 
-
+    def download(self):
+        pass
 
 def main():
 
     # load cfg
-    config = configparser.ConfigParser()
-    config.read(R.path('config.ini'), encoding='utf-8')
+    cfg = configparser.ConfigParser()
+    cfg.read(R.path('config.ini'), encoding='utf-8')
 
-    log_level = config.getint("log", "level")
-    log_file = config.get("log", "file")
+    log_level = cfg.getint("log", "level")
+    log_file = cfg.get("log", "file")
 
     # init log
     logging.basicConfig(
@@ -78,7 +112,8 @@ def main():
     )
 
 
-    app = App(config)
+    app = App(cfg)
+    app.resizable(False, False)
     app.mainloop()
 
 

@@ -1,11 +1,14 @@
 {
     "ok":"好",
     "about":"关于",
+    "help":"帮助",
     "version":"版本",
     "update":"更新",
     "loading":"加载中",
     "is_up_to_date":"已是最新",
     "find_new_version":"发现新版本",
     "request_latest_version_failed":"请求最新版本失败",
-    "yn_go_to_download":"是否去下载？"
+    "yn_go_to_download":"是否去下载？",
+    "download":"下载",
+    "url_placeholder":"请输入视频地址"
 }
