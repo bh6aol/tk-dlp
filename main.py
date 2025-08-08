@@ -29,10 +29,17 @@ class App(ctk.CTk):
         menu_bar.add_cascade(label=self.language['help'], menu=help_menu)
 
         # add menu_bar
-        self.config(menu=menu_bar)
+        # self.config(menu=menu_bar)
+
+        # setting frame
+        setting_frame = ctk.CTkFrame(self, fg_color="transparent")
+        setting_frame.pack(pady=(5, 0), padx=20, fill="x")
+        self.setting_button = ctk.CTkButton(setting_frame, text='设置', 
+                                           command=self.download, width=20)
+        self.setting_button.pack(side="left")
 
         search_frame = ctk.CTkFrame(self, fg_color="transparent")
-        search_frame.pack(pady=(30, 20), padx=20, fill="x")
+        search_frame.pack(pady=(10, 20), padx=20, fill="x")
 
         self.url_entry = ctk.CTkEntry(search_frame, placeholder_text=self.language['url_placeholder'])
         self.url_entry.pack(side="left", fill="x", expand=True)
@@ -54,7 +61,6 @@ class App(ctk.CTk):
         progressbar.set(0.5)  # set as 50%
         progressbar.start()   # unkown progress disp
 
-
     
     def center_window(self, width, height):
         screen_width = self.winfo_screenwidth()
@@ -68,7 +74,7 @@ class App(ctk.CTk):
 
     def load_language(self):
         try:
-            language = self.config.get("common", "language")
+            language = self.cfg.get("common", "language")
             if language == "auto":
                 import locale
                 default_locale = locale.getdefaultlocale()
