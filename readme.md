@@ -6,6 +6,9 @@
 ```bash
 conda create -n tk-dlp python=3.12
 ```
+```bash
+conda activate tk-dlp
+```
 ### 安装依赖
 ```bash
 pip install -r requirements.txt
