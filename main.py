@@ -1,18 +1,23 @@
-import tkinter as tk
+import threading
+from tkinter import messagebox
 import customtkinter as ctk
 import configparser
 import logging
 import json
 import os
 import sys
+import re
+import yt_dlp
 from window import *
 from util import *
 
 class App(ctk.CTk):
-    def __init__(self, cfg):
+    def __init__(self, cfg: configparser.ConfigParser):
         super().__init__()
         self.cfg = cfg
         self.language = self.load_language()
+
+        self.ansi_escape = re.compile(r'\x1B\[[0-?]*[ -/]*[@-~]')
 
         width = 400
         height = 150
@@ -21,22 +26,21 @@ class App(ctk.CTk):
         
         self.title(self.cfg.get('common', 'app_name'))
 
-        menu_bar = tk.Menu(self)
-
-        # help
-        help_menu = tk.Menu(menu_bar, tearoff=0)
-        help_menu.add_command(label=self.language['about'], accelerator="Ctrl+H", command=self.show_about)
-        menu_bar.add_cascade(label=self.language['help'], menu=help_menu)
-
-        # add menu_bar
-        # self.config(menu=menu_bar)
-
         # setting frame
         setting_frame = ctk.CTkFrame(self, fg_color="transparent")
         setting_frame.pack(pady=(5, 0), padx=20, fill="x")
-        self.setting_button = ctk.CTkButton(setting_frame, text='设置', 
-                                           command=self.download, width=20)
+
+        # setting btn
+        self.setting_button = ctk.CTkButton(setting_frame, text=self.language['setting'], 
+                                           command=self.show_setting, width=20)
         self.setting_button.pack(side="left")
+
+
+        # proxy checkbox
+        self.proxy_check_var = ctk.StringVar(value=self.cfg.get("proxy", "enabled", fallback="no"))
+        proxy_checkbox = ctk.CTkCheckBox(setting_frame, text="Enable Proxy", command=self.proxy_checkbox_event,
+                                            variable=self.proxy_check_var, onvalue="yes", offvalue="no")
+        proxy_checkbox.pack(side="left", padx=20,)
 
         search_frame = ctk.CTkFrame(self, fg_color="transparent")
         search_frame.pack(pady=(10, 20), padx=20, fill="x")
@@ -46,20 +50,19 @@ class App(ctk.CTk):
 
         ctk.CTkLabel(search_frame, width=1, text=" ").pack(side="left")
 
-        self.search_button = ctk.CTkButton(search_frame, text=self.language['download'], 
-                                           command=self.download, width=80)
-        self.search_button.pack(side="left")
+        self.download_button = ctk.CTkButton(search_frame, text=self.language['download'], 
+                                           command=self.start_download_thread, width=80)
+        self.download_button.pack(side="left")
 
         video_info_frame = ctk.CTkFrame(self, fg_color="transparent")
         video_info_frame.pack(pady=(0, 0), padx=20, fill="x")
-        ctk.CTkLabel(video_info_frame, width=1, text="Video name: ").pack(side="left")
+        self.video_info_label = ctk.CTkLabel(video_info_frame, width=1, text="")
+        self.video_info_label.pack(side="left")
 
         progress_frame = ctk.CTkFrame(self, fg_color="transparent")
         progress_frame.pack(pady=(0, 0), padx=20, fill="x")
-        progressbar = ctk.CTkProgressBar(progress_frame, width=300)
-        progressbar.pack(fill="x")
-        progressbar.set(0.5)  # set as 50%
-        progressbar.start()   # unkown progress disp
+        self.progressbar = ctk.CTkProgressBar(progress_frame, width=300)
+        self.progressbar.set(0.0)
 
     
     def center_window(self, width, height):
@@ -70,6 +73,12 @@ class App(ctk.CTk):
         y_half = int((screen_height - height) / 2)
 
         self.geometry(f"{width}x{height}+{x_half}+{y_half}")
+
+    def proxy_checkbox_event(self):
+        val = self.proxy_check_var.get()
+        self.cfg.set("proxy", "enabled", val)
+        with open(R.path("config.ini"), "w", encoding="utf-8") as f:
+            self.cfg.write(f)
 
 
     def load_language(self):
@@ -89,15 +98,80 @@ class App(ctk.CTk):
             logging.exception(e)
             sys.exit(-1)
 
-
-    def show_about(self):
-        about_win = AboutWindow(self, language=self.language, config=self.cfg)
+    def show_setting(self):
+        about_win = SettingWindow(self, language=self.language, config=self.cfg)
         about_win.transient(self)
         about_win.grab_set()
         self.wait_window(about_win)
+        # update some staff
+        self.proxy_check_var.set(self.cfg.get("proxy", "enabled", fallback="no"))
 
-    def download(self):
-        pass
+    def start_download_thread(self):
+        self.download_button.configure(text="Runing...", state="disabled", fg_color="gray")
+        threading.Thread(target=self.download, args=('downloads',), daemon=True).start()
+
+    def download(self, output_path='downloads'):
+        self.after(0, lambda: self.video_info_label.configure(text='Preparing...'))
+        self.after(0, lambda: self.progressbar.set(0))
+
+        url = self.url_entry.get()
+        if self.cfg.get('proxy', 'enabled', fallback='no') == 'yes':
+            proxy = self.cfg.get('proxy', 'https', fallback='')
+        else:
+            proxy = ''
+        ydl_opts = {
+            'outtmpl': f'{output_path}/%(title)s.%(ext)s',
+            'format': 'best',
+            'progress_hooks': [self.yt_dlp_hook],
+            'proxy': proxy,
+            'socket_timeout': 30,
+            'retries': 10,
+            'fragment_retries': 10,
+        }
+        try:
+            with yt_dlp.YoutubeDL(ydl_opts) as ydlp:
+                ydlp.download([url])
+        except Exception as e:
+            logging.exception(e)
+            messagebox.showerror(
+                title=self.cfg.get("common", "app_name"),
+                message=e,
+                icon="error")
+            self.after(0, lambda: self.video_info_label.configure(text=""))
+            self.progressbar.pack_forget()
+        finally:
+            self.download_button.configure(text=self.language['download'], state="normal", fg_color="#3a7ebf")
+
+
+
+    def yt_dlp_hook(self, d):
+        if d['status'] == 'downloading':
+            total = d.get('total_bytes') or d.get('total_bytes_estimate')
+            total_str = FmtUtil.sizeof_fmt(total) if total else "Unknown size"
+            eta = d.get('eta')
+            eta_str = FmtUtil.time_fmt(int(eta)) if eta is not None else '--'
+            msg = f"{d['_percent_str']} of {total_str} at {d['_speed_str']} ETA {eta_str}"
+            msg = self.ansi_escape.sub('', msg)
+        elif d['status'] == 'finished':
+            if d.get('downloaded_bytes', 0) == 0:
+                msg = f"Exist: {d['filename'][:24]}..."
+            else:
+                msg = f"Destination: {d['filename'][:24]}"
+        elif d['status'] == 'postprocessing':
+            msg = "Postprocessing..."
+        else:
+            messagebox.showerror(
+                title=self.cfg.get("common", "app_name"),
+                message=d,
+                icon="error")
+        self.after(0, lambda: self.video_info_label.configure(text=msg))
+        percent_str = self.ansi_escape.sub('', d['_percent_str'])
+        progress = float(percent_str.split('%')[0]) / 100.0
+        if progress > 0 and not self.progressbar.winfo_ismapped():
+            self.after(0, lambda: self.progressbar.pack(fill="x"))
+                    
+        self.after(0, lambda: self.progressbar.set(progress))
+
 
 def main():
 

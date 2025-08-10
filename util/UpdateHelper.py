@@ -9,13 +9,15 @@ class UpdateHelper:
 
     def get_latest_version(self) -> str | None:
         latest_version = None
-        http_proxy = self.config.get("proxy", "http_proxy", fallback="")
-        https_proxy = self.config.get("proxy", "https_proxy", fallback="")
-
-        proxies = {
-            "http": http_proxy,
-            "https": https_proxy,
-        }
+        if self.config.get("proxy", 'enabled') == "yes":
+            http_proxy = self.config.get("proxy", "http_proxy", fallback="")
+            https_proxy = self.config.get("proxy", "https_proxy", fallback="")
+            proxies = {
+                "http": http_proxy,
+                "https": https_proxy,
+            }
+        else:
+            proxies = {}
 
         try:
             url = self.config.get("update", "check_url")

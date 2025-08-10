@@ -1,5 +1,4 @@
 from configparser import ConfigParser
-import logging
 import threading
 from packaging import version
 import customtkinter as ctk
