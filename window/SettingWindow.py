@@ -37,7 +37,7 @@ class SettingWindow(ctk.CTkToplevel):
         self.wait_window(about_win)
 
     def load_language(self):
-        lst = [os.path.splitext(f)[0] for f in os.listdir("language")]
+        lst = [os.path.splitext(f)[0] for f in os.listdir(R.path("language"))]
         lst.insert(0, 'auto')
         return lst
 
