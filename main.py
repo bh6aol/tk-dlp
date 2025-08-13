@@ -179,8 +179,8 @@ def main():
     cfg = configparser.ConfigParser()
     cfg.read(R.path('config.ini'), encoding='utf-8')
 
-    log_level = cfg.getint("log", "level")
-    log_file = cfg.get("log", "file")
+    log_level = cfg.get("log", "level", fallback="NOTSET")
+    log_file = cfg.get("log", "file", fallback="./tk-dlp.log")
 
     # init log
     logging.basicConfig(
@@ -191,6 +191,8 @@ def main():
         level=log_level
     )
 
+    appearance_mode = cfg.get("common", "appearance_mode", fallback="system")
+    ctk.set_appearance_mode(appearance_mode)
 
     app = App(cfg)
     app.resizable(False, False)

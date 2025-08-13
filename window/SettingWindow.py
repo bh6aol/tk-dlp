@@ -57,6 +57,13 @@ class SettingWindow(ctk.CTkToplevel):
             elif section_name == "common" and key == "language":
                 entry = ctk.CTkOptionMenu(tab, values=self.load_language())
                 entry.set(self.config.get('common', 'language'))
+            elif section_name == "common" and key == "appearance_mode":
+                entry = ctk.CTkOptionMenu(tab, values=['system', 'dark', 'light'])
+                entry.set(self.config.get('common', 'appearance_mode'))
+
+            elif section_name == "log" and key == "level":
+                entry = ctk.CTkOptionMenu(tab, values=['NOTSET', 'DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'])
+                entry.set(self.config.get('log', 'level'))
             elif section_name == "proxy" and key == "enabled":
                 entry = ctk.CTkOptionMenu(tab, values=['yes', 'no'])
                 entry.set(self.config.get('proxy', 'enabled'))
