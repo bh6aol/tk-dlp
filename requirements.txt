@@ -13,4 +13,4 @@ requests==2.32.4
 setuptools==78.1.1
 urllib3==2.5.0
 wheel==0.45.1
-yt-dlp==2025.7.21
+yt-dlp==2025.8.11
