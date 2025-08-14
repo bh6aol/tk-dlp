@@ -7,7 +7,7 @@ cd "$DIR"
 # 2. main script
 MAIN_FILE="main.py"
 
-# 3. conda evn
+# 3. conda env
 CONDA_ENV_NAME="tk-dlp"
 
 # 4. activate conda env

@@ -1,5 +1,6 @@
 import threading
 from tkinter import messagebox
+from pathlib import Path
 import customtkinter as ctk
 import configparser
 import logging
@@ -38,7 +39,7 @@ class App(ctk.CTk):
 
         # proxy checkbox
         self.proxy_check_var = ctk.StringVar(value=self.cfg.get("proxy", "enabled", fallback="no"))
-        proxy_checkbox = ctk.CTkCheckBox(setting_frame, text="Enable Proxy", command=self.proxy_checkbox_event,
+        proxy_checkbox = ctk.CTkCheckBox(setting_frame, text=self.language['enable_proxy'], command=self.proxy_checkbox_event,
                                             variable=self.proxy_check_var, onvalue="yes", offvalue="no")
         proxy_checkbox.pack(side="left", padx=20,)
 
@@ -108,25 +109,42 @@ class App(ctk.CTk):
 
     def start_download_thread(self):
         self.download_button.configure(text="Runing...", state="disabled", fg_color="gray")
-        threading.Thread(target=self.download, args=('downloads',), daemon=True).start()
+        threading.Thread(target=self.download, daemon=True).start()
 
-    def download(self, output_path='downloads'):
+    def download(self):
         self.after(0, lambda: self.video_info_label.configure(text='Preparing...'))
         self.after(0, lambda: self.progressbar.set(0))
 
         url = self.url_entry.get()
         if self.cfg.get('proxy', 'enabled', fallback='no') == 'yes':
-            proxy = self.cfg.get('proxy', 'https', fallback='')
+            if url.startswith("http://"):
+                proxy = self.cfg.get('proxy', 'http', fallback='')
+            elif url.startswith("https://"):
+                proxy = self.cfg.get('proxy', 'https', fallback='')
+            else:
+                messagebox.showerror(
+                title=self.cfg.get("common", "app_name"),
+                message=f"{self.language['protocol_not_support']}: {url}",
+                icon="error")
+                self.after(0, lambda: self.video_info_label.configure(text=""))
+                self.download_button.configure(text=self.language['download'], state="normal", fg_color="#3a7ebf")
+                return
         else:
             proxy = ''
+        if self.cfg.get('ffmpeg', 'enabled_system', fallback='yes') == 'yes':
+            ffmpeg_location = "ffmpeg"
+        else:
+            ffmpeg_location = self.cfg.get('ffmpeg', 'custom_location') 
+        
         ydl_opts = {
-            'outtmpl': f'{output_path}/%(title)s.%(ext)s',
+            'outtmpl': f'{self.cfg.get('common', 'save_location')}/%(title)s.%(ext)s',
             'format': 'best',
             'progress_hooks': [self.yt_dlp_hook],
             'proxy': proxy,
             'socket_timeout': 30,
             'retries': 10,
             'fragment_retries': 10,
+            'ffmpeg_location': ffmpeg_location
         }
         try:
             with yt_dlp.YoutubeDL(ydl_opts) as ydlp:
@@ -193,6 +211,11 @@ def main():
 
     appearance_mode = cfg.get("common", "appearance_mode", fallback="system")
     ctk.set_appearance_mode(appearance_mode)
+
+    if cfg.get('common', 'save_location', fallback='') == '':
+        cfg.set('common', 'save_location', str(Path.home()))
+        with open(R.path("config.ini"), "w", encoding="utf-8") as f:
+            cfg.write(f)
 
     app = App(cfg)
     app.resizable(False, False)

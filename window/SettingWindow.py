@@ -1,6 +1,7 @@
 from configparser import ConfigParser
 import customtkinter as ctk
 from tkinter import messagebox
+import yt_dlp
 from window import *
 from util import *
 import os
@@ -67,6 +68,16 @@ class SettingWindow(ctk.CTkToplevel):
             elif section_name == "proxy" and key == "enabled":
                 entry = ctk.CTkOptionMenu(tab, values=['yes', 'no'])
                 entry.set(self.config.get('proxy', 'enabled'))
+            elif section_name == "yt-dlp" and key == "buildin_version":
+                entry = ctk.CTkLabel(tab, text=yt_dlp.version.__version__, anchor="w")
+            elif section_name == "ffmpeg" and key == "enabled_system":
+                entry = ctk.CTkOptionMenu(tab, values=['yes', 'no'])
+                entry.set(self.config.get('ffmpeg', 'enabled_system'))
+            elif section_name == "ffmpeg" and key == "system_version":
+                ffmpeg_info = ProbUtil.prob_ffmpeg_info()
+                if ffmpeg_info == None:
+                    ffmpeg_info = self.language['not_found']
+                entry = ctk.CTkLabel(tab, text=ffmpeg_info, anchor="w")
             else:
                 entry = ctk.CTkEntry(tab)
                 entry.insert(0, value)
@@ -77,10 +88,25 @@ class SettingWindow(ctk.CTkToplevel):
             row += 1
 
     def save_config(self):
+        # check custom location
+        if self.entries['ffmpeg']['enabled_system'].get() == 'no':
+            custom_yt_dlp_location = self.entries['ffmpeg']['custom_location'].get()
+            ret = ProbUtil.prob_yt_dlp_info(custom_yt_dlp_location)
+            if ret == None:
+                messagebox.showerror(
+                    title=self.language['setting'],
+                    message=f"ffmpeg:custom_location={custom_yt_dlp_location} \n{self.language['no_exec']}",
+                    icon="error")
+                return
+
         for section, keys in self.entries.items():
             for key, entry in keys.items():
-                self.config[section][key] = entry.get()
-
+                if isinstance(entry, ctk.CTkEntry) or isinstance(entry, ctk.CTkOptionMenu):
+                    self.config[section][key] = entry.get()
+                elif isinstance(entry, ctk.CTkLabel):
+                    self.config[section][key] = entry.cget("text")
+                else:
+                    raise Exception("save_config failed, unkown entry type!")
         with open(R.path("config.ini"), "w", encoding="utf-8") as f:
             self.config.write(f)
         

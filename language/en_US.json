@@ -13,5 +13,9 @@
     "url_placeholder":"Please enter the video address",
     "setting":"Setting",
     "save":"Save",
-    "saved":"Saved"
+    "saved":"Saved",
+    "not_found":"Not found",
+    "enable_proxy":"Enable Proxy",
+    "no_exec":"No executable program found",
+    "protocol_not_support":"Protocol not supported"
 }
