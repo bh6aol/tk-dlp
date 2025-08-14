@@ -1,20 +1,21 @@
+# 📦 tk-dlp
+A GUI wrapper for [yt-dlp](https://github.com/yt-dlp/yt-dlp/) built with [CustomTkinter](https://customtkinter.tomschimansky.com/).
 
-# Build
 
-## 1. 创建环境
-### 使用 conda 创建 python 环境
+# 📥 Download
+Currently, only 64-bit Windows executable binaries are available.
+Get the latest release from the [Releases page]().
+
+# 🛠️ Build from Source
+
+## 1. Create a Python Environment
+Using Conda (recommended):
 ```bash
 conda create -n tk-dlp python=3.12
-```
-```bash
 conda activate tk-dlp
-```
-### 安装依赖
-```bash
 pip install -r requirements.txt
 ```
-
-## 2. 运行构建脚本
+## 2. Build Executable
 
 ### Unix / macOS
 
@@ -28,25 +29,9 @@ pip install -r requirements.txt
 build.cmd
 ```
 
-## 3. 完成
+## 3. Run
+After building, you can find the executable in:`dist/`. Run it and enjoy 🎉
 
-构建完成后即可开始使用 🎉
 
----
-
-# Misc
-
-## 1. macOS 签名绕过
-
-构建后第一次运行前，可能需要移除隔离属性：
-
-```bash
-xattr -dr com.apple.quarantine dist/main.app
-```
-
-## 2. macOS 测试运行
-
-```bash
-cd dist/main.app/Contents/MacOS/
-./main
-```
+# 📄 License
+This project is licensed under the MIT License.
