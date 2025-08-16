@@ -10,12 +10,14 @@
     "request_latest_version_failed":"Request latest version failed",
     "yn_go_to_download":"Go to download?",
     "download":"Download",
-    "url_placeholder":"Please enter the video address",
+    "url_placeholder":"Please enter the URL",
     "setting":"Setting",
     "save":"Save",
     "saved":"Saved",
     "not_found":"Not found",
     "enable_proxy":"Enable Proxy",
     "no_exec":"No executable program found",
-    "protocol_not_support":"Protocol not supported"
+    "protocol_not_support":"Protocol not supported",
+    "runing":"Runing",
+    "url_is_empty":"URL is empty"
 }

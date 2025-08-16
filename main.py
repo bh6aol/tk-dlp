@@ -108,14 +108,23 @@ class App(ctk.CTk):
         self.proxy_check_var.set(self.cfg.get("proxy", "enabled", fallback="no"))
 
     def start_download_thread(self):
-        self.download_button.configure(text="Runing...", state="disabled", fg_color="gray")
+        self.download_button.configure(text=f"{self.language['runing']}...", state="disabled", fg_color="gray")
         threading.Thread(target=self.download, daemon=True).start()
 
     def download(self):
-        self.after(0, lambda: self.video_info_label.configure(text='Preparing...'))
+        self.after(0, lambda: self.video_info_label.configure(text=f'{self.language['preparing']}...'))
         self.after(0, lambda: self.progressbar.set(0))
 
         url = self.url_entry.get()
+        if url == "":
+            messagebox.showerror(
+                title=self.cfg.get("common", "app_name"),
+                message=self.language['url_is_empty'],
+                icon="error")
+            self.after(0, lambda: self.video_info_label.configure(text=""))
+            self.download_button.configure(text=self.language['download'], state="normal", fg_color="#3a7ebf")
+            return
+
         if self.cfg.get('proxy', 'enabled', fallback='no') == 'yes':
             if url.startswith("http://"):
                 proxy = self.cfg.get('proxy', 'http', fallback='')

@@ -10,12 +10,15 @@
     "request_latest_version_failed":"请求最新版本失败",
     "yn_go_to_download":"是否去下载？",
     "download":"下载",
-    "url_placeholder":"请输入视频地址",
+    "url_placeholder":"请输入URL地址",
     "setting":"设置",
     "save":"保存",
     "saved":"已保存",
     "not_found":"未找到",
     "enable_proxy":"启用代理",
     "no_exec":"未找到可执行程序",
-    "protocol_not_support":"协议不支持"
+    "protocol_not_support":"协议不支持",
+    "preparing":"准备中",
+    "runing":"运行中",
+    "url_is_empty":"URL地址为空"
 }
