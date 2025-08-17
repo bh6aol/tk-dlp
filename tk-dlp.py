@@ -239,6 +239,7 @@ def main():
             cfg.write(f)
 
     app = App(cfg)
+    app.iconbitmap(R.path(os.path.join("image","tk-dlp.ico")))
     app.resizable(False, False)
     app.mainloop()
 

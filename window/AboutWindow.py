@@ -1,4 +1,5 @@
 from configparser import ConfigParser
+import os
 import threading
 from packaging import version
 import customtkinter as ctk
@@ -13,6 +14,7 @@ class AboutWindow(ctk.CTkToplevel):
         self.language = language
         self.config = config
         self.title(language["about"])
+        self.iconbitmap(R.path(os.path.join("image","tk-dlp.ico")))
         self.resizable(False, False)
         self.geometry("350x180")
 

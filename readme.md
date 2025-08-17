@@ -1,4 +1,5 @@
 # 📦 tk-dlp
+![tk-dlp](tk-dlp.png)
 A GUI wrapper for [yt-dlp](https://github.com/yt-dlp/yt-dlp/) built with [CustomTkinter](https://customtkinter.tomschimansky.com/).
 
 
@@ -16,12 +17,6 @@ conda activate tk-dlp
 pip install -r requirements.txt
 ```
 ## 2. Build Executable
-
-### Unix / macOS
-
-```bash
-./build.sh
-```
 
 ### Windows
 

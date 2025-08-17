@@ -12,6 +12,7 @@ class SettingWindow(ctk.CTkToplevel):
         self.config = config
         self.language = language
         self.title(self.language['setting'])
+        self.iconbitmap(R.path(os.path.join("image","tk-dlp.ico")))
         self.geometry("600x400")
         self.entries = {}  # ref
 

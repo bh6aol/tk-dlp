@@ -3,7 +3,7 @@ REM === Step 1: cur dir ===
 cd /d %~dp0
 
 REM === Step 2: main  ===
-set MAIN_FILE=main.py
+set MAIN_FILE=tk-dlp.py
 
 REM === Step 3: Conda env ===
 set CONDA_ENV_NAME=tk-dlp
@@ -26,6 +26,7 @@ SET BUILD_CMD=pyinstaller ^
  --add-data "language;language" ^
  --add-data "image;image" ^
  --add-data "%CUSTOMTKINTER_PATH%;customtkinter" ^
+ --icon=image\tk-dlp.ico ^
  %MAIN_FILE%
 
 REM === Step 7: run ===
