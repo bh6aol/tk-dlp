@@ -18,6 +18,8 @@
     "enable_proxy":"Enable Proxy",
     "no_exec":"No executable program found",
     "protocol_not_support":"Protocol not supported",
+    "preparing":"Preparing",
     "runing":"Runing",
-    "url_is_empty":"URL is empty"
+    "url_is_empty":"URL is empty",
+    "file_already_exists":"File already exists"
 }

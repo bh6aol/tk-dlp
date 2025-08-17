@@ -1,3 +1,4 @@
+import shutil
 import threading
 from tkinter import messagebox
 from pathlib import Path
@@ -39,7 +40,8 @@ class App(ctk.CTk):
 
         # proxy checkbox
         self.proxy_check_var = ctk.StringVar(value=self.cfg.get("proxy", "enabled", fallback="no"))
-        proxy_checkbox = ctk.CTkCheckBox(setting_frame, text=self.language['enable_proxy'], command=self.proxy_checkbox_event,
+        proxy_checkbox = ctk.CTkCheckBox(setting_frame, text=self.language['enable_proxy'], 
+                                                command=self.proxy_checkbox_event,
                                             variable=self.proxy_check_var, onvalue="yes", offvalue="no")
         proxy_checkbox.pack(side="left", padx=20,)
 
@@ -141,22 +143,32 @@ class App(ctk.CTk):
         else:
             proxy = ''
         if self.cfg.get('ffmpeg', 'enabled_system', fallback='yes') == 'yes':
-            ffmpeg_location = "ffmpeg"
+            ffmpeg_location = shutil.which("ffmpeg")
         else:
             ffmpeg_location = self.cfg.get('ffmpeg', 'custom_location') 
         
+        if self.cfg.get('yt-dlp', 'enabled_cookiefile', fallback='no') == 'yes':
+            cookiefile = self.cfg.get('yt-dlp', 'cookiefile', fallback=None)
+        else:
+            cookiefile = None
         ydl_opts = {
             'outtmpl': f'{self.cfg.get('common', 'save_location')}/%(title)s.%(ext)s',
-            'format': 'best',
+            'format': self.cfg.get('yt-dlp', 'format', fallback='best'),
+            'cookiefile': cookiefile,
             'progress_hooks': [self.yt_dlp_hook],
             'proxy': proxy,
-            'socket_timeout': 30,
-            'retries': 10,
-            'fragment_retries': 10,
-            'ffmpeg_location': ffmpeg_location
+            'socket_timeout': self.cfg.getint('yt-dlp', 'socket_timeout', fallback=30),
+            'retries': self.cfg.getint('yt-dlp', 'retries', fallback=10),
+            'fragment_retries': self.cfg.getint('yt-dlp', 'fragment_retries', fallback=10),
+            'ffmpeg_location': ffmpeg_location,
+            'logger': YtDlpLogger(),
         }
         try:
             with yt_dlp.YoutubeDL(ydl_opts) as ydlp:
+                info = ydlp.extract_info(url, download=False)
+                filename = ydlp.prepare_filename(info)
+                if os.path.exists(filename):
+                    raise Exception(f"{self.language['file_already_exists']}: {filename}")
                 ydlp.download([url])
         except Exception as e:
             logging.exception(e)

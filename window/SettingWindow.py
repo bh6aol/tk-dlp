@@ -68,8 +68,15 @@ class SettingWindow(ctk.CTkToplevel):
             elif section_name == "proxy" and key == "enabled":
                 entry = ctk.CTkOptionMenu(tab, values=['yes', 'no'])
                 entry.set(self.config.get('proxy', 'enabled'))
+            elif section_name == "update" and key in ("check_url", "download_url"):
+                entry = ctk.CTkEntry(tab)
+                entry.insert(0, value)
+                entry.configure(state="readonly")
             elif section_name == "yt-dlp" and key == "buildin_version":
                 entry = ctk.CTkLabel(tab, text=yt_dlp.version.__version__, anchor="w")
+            elif section_name == "yt-dlp" and key == "enabled_cookiefile":
+                entry = ctk.CTkOptionMenu(tab, values=['yes', 'no'])
+                entry.set(self.config.get('yt-dlp', 'enabled_cookiefile'))
             elif section_name == "ffmpeg" and key == "enabled_system":
                 entry = ctk.CTkOptionMenu(tab, values=['yes', 'no'])
                 entry.set(self.config.get('ffmpeg', 'enabled_system'))
@@ -91,7 +98,7 @@ class SettingWindow(ctk.CTkToplevel):
         # check custom location
         if self.entries['ffmpeg']['enabled_system'].get() == 'no':
             custom_yt_dlp_location = self.entries['ffmpeg']['custom_location'].get()
-            ret = ProbUtil.prob_yt_dlp_info(custom_yt_dlp_location)
+            ret = ProbUtil.prob_ffmpeg_info(custom_yt_dlp_location)
             if ret == None:
                 messagebox.showerror(
                     title=self.language['setting'],

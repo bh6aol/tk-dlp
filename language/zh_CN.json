@@ -20,5 +20,6 @@
     "protocol_not_support":"协议不支持",
     "preparing":"准备中",
     "runing":"运行中",
-    "url_is_empty":"URL地址为空"
+    "url_is_empty":"URL地址为空",
+    "file_already_exists":"文件以存在"
 }
